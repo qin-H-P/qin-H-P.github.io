@@ -918,17 +918,202 @@
   @keyframes introLine { 0%,100%{opacity:.3} 50%{opacity:1} }
 
   /* ============================================================
-     手机端适配（性能优化 + 视觉保持）
+     新增：音乐开关
      ============================================================ */
+  .music-toggle {
+    position:fixed;
+    right:40px;
+    bottom:13vh;
+    z-index:101;
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background: rgba(10,8,6,.55);
+    border: 1px solid rgba(255,180,120,.3);
+    color: #ffb478;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .4s;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 0;
+    font-family: inherit;
+  }
+  .music-toggle:hover {
+    border-color: rgba(255,180,120,.8);
+    box-shadow: 0 0 20px rgba(255,180,120,.5);
+    transform: scale(1.05);
+  }
+  .music-toggle svg {
+    transition: opacity .3s;
+    position: absolute;
+    opacity: .85;
+  }
+  .music-bars {
+    position: absolute;
+    display: none;
+    gap: 2px;
+    align-items: flex-end;
+    height: 12px;
+  }
+  .music-bars span {
+    width: 2px;
+    background: #ffb478;
+    border-radius: 1px;
+    box-shadow: 0 0 6px rgba(255,180,120,.9);
+  }
+  .music-toggle.playing svg { opacity: 0; }
+  .music-toggle.playing .music-bars { display: flex; }
+  .music-toggle.playing .music-bars span:nth-child(1) { animation: musicBar1 1s ease-in-out infinite; }
+  .music-toggle.playing .music-bars span:nth-child(2) { animation: musicBar2 1s ease-in-out infinite .15s; }
+  .music-toggle.playing .music-bars span:nth-child(3) { animation: musicBar1 1s ease-in-out infinite .3s; }
+  @keyframes musicBar1 {
+    0%,100% { height: 4px; opacity: .5; }
+    50%     { height: 12px; opacity: 1; }
+  }
+  @keyframes musicBar2 {
+    0%,100% { height: 12px; opacity: 1; }
+    50%     { height: 5px; opacity: .5; }
+  }
+
+  /* ============================================================
+     新增：最后一页的彩蛋触发器
+     ============================================================ */
+  .egg-trigger {
+    margin-top: 3.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ffb478;
+    box-shadow:
+      0 0 20px rgba(255,180,120,.9),
+      0 0 60px rgba(255,150,80,.5);
+    cursor: pointer;
+    position: relative;
+    transition: transform .3s;
+    pointer-events: auto;
+  }
+  .egg-trigger::before,
+  .egg-trigger::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,180,120,.7);
+    animation: eggPulse 2.4s ease-out infinite;
+    pointer-events: none;
+  }
+  .egg-trigger::after {
+    animation-delay: 1.2s;
+  }
+  @keyframes eggPulse {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2.8); opacity: 0; }
+  }
+  .egg-trigger:hover {
+    transform: scale(1.4);
+    box-shadow:
+      0 0 30px rgba(255,180,120,1),
+      0 0 80px rgba(255,150,80,.7);
+  }
+
+  /* ============================================================
+     新增：全屏彩蛋动画层
+     ============================================================ */
+  .egg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0,0,0,.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .8s ease;
+  }
+  .egg-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .egg-rings {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .egg-ring {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,180,120,.9);
+    box-shadow:
+      0 0 30px rgba(255,180,120,.8),
+      inset 0 0 20px rgba(255,180,120,.4);
+    opacity: 0;
+  }
+  .egg-overlay.active .egg-ring {
+    animation: eggRing 2.4s cubic-bezier(.4,0,.2,1) forwards;
+  }
+  .egg-overlay.active .egg-ring:nth-child(1) { animation-delay: 0s; }
+  .egg-overlay.active .egg-ring:nth-child(2) { animation-delay: .25s; }
+  .egg-overlay.active .egg-ring:nth-child(3) { animation-delay: .5s; }
+  @keyframes eggRing {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(35); }
+  }
+
+  .egg-message {
+    position: relative;
+    font-family: 'SF Mono', ui-monospace, monospace;
+    font-size: clamp(1.1rem, 2.4vw, 1.8rem);
+    letter-spacing: .6em;
+    color: #ffb478;
+    text-shadow:
+      0 0 40px rgba(255,180,120,1),
+      0 0 100px rgba(255,150,80,.6);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .9s, transform .9s;
+    text-align: center;
+    padding: 0 4vw;
+    font-weight: 300;
+    padding-left: calc(4vw + .6em);
+  }
+  .egg-overlay.active .egg-message {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: .7s;
+  }
+
   @media (max-width: 900px) {
-    /* 触摸优化 */
+    .music-toggle {
+      right: 16px;
+      bottom: 11vh;
+      width: 34px;
+      height: 34px;
+    }
+    .egg-trigger {
+      margin-top: 2.4rem;
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  @media (max-width: 900px) {
     html, body {
       overscroll-behavior: none;
       touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
     }
-
-    /* 关掉自定义光标（已有） */
     body.custom-cursor-on { cursor: auto; }
     body.custom-cursor-on button,
     body.custom-cursor-on input,
@@ -936,7 +1121,6 @@
     body.custom-cursor-on a { cursor: auto; }
     .cursor, .cursor-glow { display: none !important; }
 
-    /* ---- 性能优化：关闭非关键动画 ---- */
     .noise { animation: none !important; opacity: .04; }
     .scanlines { display: none; }
     .chroma { display: none; }
@@ -951,21 +1135,13 @@
     .intro-line { animation: none; opacity: .8; }
     .hint span { animation: none; }
 
-    /* ---- 性能优化：简化 sceneIn（去掉 blur） ---- */
     @keyframes sceneIn {
       0%   { opacity:0; transform: translateY(6%) scale(1.04); }
       100% { opacity:1; transform: translateY(0) scale(1); }
     }
+    .space-far { filter: brightness(.65) contrast(1.2); }
+    .space-mid { filter: brightness(.7); }
 
-    /* ---- 性能优化：简化背景滤镜 ---- */
-    .space-far {
-      filter: brightness(.65) contrast(1.2);
-    }
-    .space-mid {
-      filter: brightness(.7);
-    }
-
-    /* ---- 布局 ---- */
     .scene { padding: 0 6vw; }
     .scene-inner { grid-template-columns:1fr; gap:2rem; max-width:100%; }
 
@@ -990,11 +1166,9 @@
     .planet-ring { width:170vw; height:170vw; left:-20vw; top:-65vw; }
     #debrisLayer { display:none; }
 
-    /* 第 1 页 */
     .intro-hint { font-size:.55rem; letter-spacing:.45em; }
     .intro-line { height:40px; margin-top:1.5rem; }
 
-    /* 第 2 页 */
     .intro-text { gap:1.6rem; }
     .type-line {
       font-size: clamp(1.3rem, 7vw, 2.2rem);
@@ -1002,7 +1176,6 @@
       padding: 0 4vw;
     }
 
-    /* 第 3 页 */
     .three-parts { gap:1.6rem; max-width:100%; }
     .part-label { font-size:.5rem; letter-spacing:.35em; margin-bottom:.6rem; }
     .part-text {
@@ -1011,29 +1184,13 @@
       padding: 0 2vw;
     }
 
-    /* 第 4 页 */
     .contact-wrap { gap:2rem; max-width:100%; padding: 0 2vw; }
-    .contact-title {
-      font-size:.5rem; letter-spacing:.4em;
-      margin-bottom:0;
-    }
-    .contact-line {
-      gap: .9rem;
-      flex-wrap: nowrap;
-    }
-    .contact-label {
-      min-width: 60px;
-      font-size: .55rem;
-      letter-spacing: .3em;
-    }
+    .contact-title { font-size:.5rem; letter-spacing:.4em; margin-bottom:0; }
+    .contact-line { gap: .9rem; flex-wrap: nowrap; }
+    .contact-label { min-width: 60px; font-size: .55rem; letter-spacing: .3em; }
     .contact-dash { width: 30px; }
-    .contact-value {
-      font-size: clamp(.85rem, 4vw, 1.15rem);
-      letter-spacing: .04em;
-      padding-bottom: .3rem;
-    }
+    .contact-value { font-size: clamp(.85rem, 4vw, 1.15rem); padding-bottom: .3rem; }
 
-    /* 第 5 页 */
     h1.end-title {
       font-size: clamp(3rem, 20vw, 7rem);
       letter-spacing: .08em; line-height: 1.1;
@@ -1041,12 +1198,9 @@
     .end-kicker { font-size:.55rem; letter-spacing:.4em; margin-bottom:1.2rem; }
     .end-line { height:40px; margin-top:2rem; }
     .end-sub { margin-top:1.5rem; font-size:.55rem; letter-spacing:.35em; }
-    .end-info {
-      margin-top:2rem; font-size:.5rem; letter-spacing:.25em; line-height:2;
-    }
+    .end-info { margin-top:2rem; font-size:.5rem; letter-spacing:.25em; line-height:2; }
     .end-info span { margin: 0 .5rem; }
 
-    /* 手机上过渡动画时长缩短，更跟手 */
     body.t-vslide .transition-layer.vslide .t-vslide-top,
     body.t-vslide .transition-layer.vslide .t-vslide-bottom { animation-duration: .9s; }
     body.t-vslide .transition-layer.vslide .t-vslide-line { animation-duration: .9s; }
@@ -1132,6 +1286,27 @@
 
 <div class="flash" id="flash"></div>
 <div class="transition-name" id="transitionName"></div>
+
+<!-- 背景音乐（柔和钢琴曲） -->
+<button class="music-toggle" id="musicToggle" aria-label="音乐开关">
+  <svg viewBox="0 0 24 24" width="16" height="16">
+    <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" fill="currentColor"/>
+  </svg>
+  <span class="music-bars"><span></span><span></span><span></span></span>
+</button>
+<audio id="bgMusic" loop preload="auto" autoplay>
+  <source src="https://cdn.pixabay.com/download/audio/2022/11/23/audio_af8f60c3a6.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 全屏彩蛋动画层 -->
+<div class="egg-overlay" id="eggOverlay">
+  <div class="egg-rings">
+    <div class="egg-ring"></div>
+    <div class="egg-ring"></div>
+    <div class="egg-ring"></div>
+  </div>
+  <div class="egg-message">SEE YOU SOON</div>
+</div>
 
 <div class="hud">
   <div class="hud-tl"><span class="dot"></span> REC · RUAN.STUDIO</div>
@@ -1251,6 +1426,8 @@
           <span>·</span>
           <span>MADE WITH PASSION</span>
         </div>
+
+        <div class="egg-trigger" id="eggTrigger" aria-label="彩蛋"></div>
       </div>
     </div>
   </section>
@@ -1270,9 +1447,6 @@
 <div class="cursor-glow" id="cursorGlow"></div>
 
 <script>
-/* ============================================================
-   ⭐ 手机端：动态视口高度（修复加载不全）
-   ============================================================ */
 function setVH() {
   document.documentElement.style.setProperty('--vh', (window.innerHeight * 0.01) + 'px');
 }
@@ -1280,13 +1454,9 @@ setVH();
 window.addEventListener('resize', setVH);
 window.addEventListener('orientationchange', () => setTimeout(setVH, 200));
 
-/* 是否手机端 */
 let isMobile = window.innerWidth <= 900;
 window.addEventListener('resize', () => { isMobile = window.innerWidth <= 900; });
 
-/* ============================================================
-   Canvas 星空穿越
-   ============================================================ */
 const canvas = document.getElementById('warp');
 const ctx = canvas.getContext('2d');
 let W, H, stars = [];
@@ -1296,10 +1466,7 @@ function resize() {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
   stars = [];
-  /* ⭐ 手机端只用 60 个粒子（原 180） */
-  const count = isMobile
-    ? 60
-    : Math.min(180, Math.floor(W * H / 12000));
+  const count = isMobile ? 60 : Math.min(180, Math.floor(W * H / 12000));
   for (let i = 0; i < count; i++) {
     stars.push({
       x: (Math.random() - 0.5) * W,
@@ -1346,7 +1513,6 @@ function drawWarp() {
     ctx.moveTo(px2, py2); ctx.lineTo(px, py);
     ctx.strokeStyle = `hsla(${hue}, 90%, 75%, ${alpha})`;
     ctx.lineWidth = Math.max(0.3, depth * 1.8);
-    /* ⭐ 手机端不做 shadowBlur（性能杀手） */
     if (!isMobile) {
       ctx.shadowColor = `hsla(${hue}, 90%, 75%, ${alpha})`;
       ctx.shadowBlur = 6;
@@ -1358,9 +1524,6 @@ function drawWarp() {
 }
 drawWarp();
 
-/* ============================================================
-   场景
-   ============================================================ */
 const CAMERA_KEYS = [
   { x: -30,  y: 20,   z: 0.00, roll: 0 },
   { x: -40,  y: 30,   z: 0.02, roll: 0 },
@@ -1542,7 +1705,6 @@ function goto(index) {
   Object.assign(camTarget, CAMERA_KEYS[to]);
   current = to;
 
-  /* 手机端过渡更快 */
   const cooldown = isMobile ? 1400 : 2000;
   transitionTimer = setTimeout(() => {
     document.body.classList.remove('t-vslide','t-warp','t-fade','t-rewind-a','t-rewind-c');
@@ -1559,12 +1721,86 @@ window.addEventListener('load', () => {
   });
   progressCircle.style.strokeDashoffset = 113;
   if (current === 1) setTimeout(() => playTypewriter(), 200);
+
+  attemptAutoPlay();
 });
 
 const MAX_INDEX = 4;
 
 /* ============================================================
-   ⭐ 手机端触摸手势：上下滑切页
+   背景音乐：自动播放 + 手动开关
+   ============================================================ */
+const musicToggle = document.getElementById('musicToggle');
+const bgMusic = document.getElementById('bgMusic');
+let musicPlaying = false;
+bgMusic.volume = 0.35;
+
+function setPlayingUI(playing) {
+  musicPlaying = playing;
+  if (playing) {
+    musicToggle.classList.add('playing');
+  } else {
+    musicToggle.classList.remove('playing');
+  }
+}
+
+function attemptAutoPlay() {
+  bgMusic.play().then(() => {
+    setPlayingUI(true);
+  }).catch(() => {
+    const tryPlay = () => {
+      bgMusic.play().then(() => {
+        setPlayingUI(true);
+        removeListeners();
+      }).catch(() => {});
+    };
+    const removeListeners = () => {
+      window.removeEventListener('click', tryPlay);
+      window.removeEventListener('touchstart', tryPlay);
+      window.removeEventListener('keydown', tryPlay);
+      window.removeEventListener('scroll', tryPlay);
+    };
+    window.addEventListener('click', tryPlay);
+    window.addEventListener('touchstart', tryPlay);
+    window.addEventListener('keydown', tryPlay);
+    window.addEventListener('scroll', tryPlay);
+  });
+}
+
+musicToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (musicPlaying) {
+    bgMusic.pause();
+    setPlayingUI(false);
+  } else {
+    bgMusic.play().then(() => {
+      setPlayingUI(true);
+    }).catch(err => {
+      console.log('音乐播放失败:', err);
+    });
+  }
+});
+
+/* ============================================================
+   彩蛋
+   ============================================================ */
+const eggTrigger = document.getElementById('eggTrigger');
+const eggOverlay = document.getElementById('eggOverlay');
+let eggAnimating = false;
+
+eggTrigger.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (eggAnimating) return;
+  eggAnimating = true;
+  eggOverlay.classList.add('active');
+  setTimeout(() => {
+    eggOverlay.classList.remove('active');
+    setTimeout(() => { eggAnimating = false; }, 900);
+  }, 2800);
+});
+
+/* ============================================================
+   触摸手势
    ============================================================ */
 let touchStartX = 0;
 let touchStartY = 0;
@@ -1584,31 +1820,28 @@ window.addEventListener('touchend', (e) => {
   const dx = e.changedTouches[0].clientX - touchStartX;
   const dt = Date.now() - touchStartTime;
 
-  /* 判定为滑动：垂直距离 > 50px，且以垂直方向为主，时间 < 600ms */
   if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx) * 1.2 && dt < 600) {
     justSwiped = true;
     setTimeout(() => { justSwiped = false; }, 500);
-
     if (dy < 0) {
-      /* 手指向上滑 = 下一页 */
       if (current < MAX_INDEX) goto(current + 1);
     } else {
-      /* 手指向下滑 = 上一页 */
       if (current > 0) goto(current - 1);
     }
   }
 }, { passive: true });
 
-/* 点击切换（保留原逻辑） */
 window.addEventListener('click', (e) => {
   if (justSwiped) return;
   if (e.target.closest('.dot-nav')) return;
   if (e.target.closest('button, input, textarea, a')) return;
+  if (e.target.closest('.music-toggle')) return;
+  if (e.target.closest('.egg-trigger')) return;
+  if (eggOverlay.classList.contains('active')) return;
   if (current >= MAX_INDEX) return;
   goto(current + 1);
 });
 
-/* 桌面端滚轮 */
 let wheelLock = false;
 window.addEventListener('wheel', (e) => {
   if (wheelLock) return;
@@ -1622,7 +1855,6 @@ window.addEventListener('wheel', (e) => {
   }
 }, { passive: true });
 
-/* 键盘 */
 window.addEventListener('keydown', (e) => {
   if (['ArrowRight','ArrowDown',' ','Enter'].includes(e.key)) {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
